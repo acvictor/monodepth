@@ -82,18 +82,24 @@ def test_simple(params):
     output_directory = sys.path[0]
     output_name = os.path.splitext(os.path.basename(args.image_path))[0]
 
+    #np.save(os.path.join(output_directory, "{}_disp.npy".format(output_name)), disp_pp)
+    disp_to_img = scipy.misc.imresize(disp_pp.squeeze(), [original_height, original_width])
+    plt.imsave(os.path.join(output_directory, "{}_disp.png".format(output_name)), disp_to_img, cmap='plasma')
+
     baseline = 0.22
     focal = 2262
-
     depth = baseline * focal / (original_width * disp_pp + 1e-5)
-    np.save(os.path.join(output_directory, "{}_depth.npy".format(output_name)), depth)
+    
+    #np.save(os.path.join(output_directory, "{}_depth.npy".format(output_name)), depth)
     depth_to_img = scipy.misc.imresize(depth.squeeze(), [original_height, original_width])
     plt.imsave(os.path.join(output_directory, "{}_depth.png".format(output_name)), depth_to_img, cmap='plasma', vmax = 60)  
     
+    fileOut = open("{}_depth.txt".format(output_name), "w")
 
-    np.save(os.path.join(output_directory, "{}_disp.npy".format(output_name)), disp_pp)
-    disp_to_img = scipy.misc.imresize(disp_pp.squeeze(), [original_height, original_width])
-    plt.imsave(os.path.join(output_directory, "{}_disp.png".format(output_name)), disp_to_img, cmap='plasma')
+    for x in range(0, depth_to_img.shape[0]):
+        for y in range(0, depth_to_img.shape[1]):
+            fileOut.write(str(depth_to_img[x][y]) + ' ')
+        fileOut.write('\n')
 
     print('done!')
 
