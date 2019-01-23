@@ -12,6 +12,7 @@ from __future__ import absolute_import, division, print_function
 # only keep warnings and errors
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='0'
+import sys
 
 import numpy as np
 import argparse
@@ -78,8 +79,17 @@ def test_simple(params):
     disp = sess.run(model.disp_left_est[0], feed_dict={left: input_images})
     disp_pp = post_process_disparity(disp.squeeze()).astype(np.float32)
 
-    output_directory = os.path.dirname(args.image_path)
+    output_directory = sys.path[0]
     output_name = os.path.splitext(os.path.basename(args.image_path))[0]
+
+    baseline = 0.22
+    focal = 2262
+
+    depth = baseline * focal / (original_width * disp_pp + 1e-5)
+    np.save(os.path.join(output_directory, "{}_depth.npy".format(output_name)), depth)
+    depth_to_img = scipy.misc.imresize(depth.squeeze(), [original_height, original_width])
+    plt.imsave(os.path.join(output_directory, "{}_depth.png".format(output_name)), depth_to_img, cmap='plasma', vmax = 60)  
+    
 
     np.save(os.path.join(output_directory, "{}_disp.npy".format(output_name)), disp_pp)
     disp_to_img = scipy.misc.imresize(disp_pp.squeeze(), [original_height, original_width])
