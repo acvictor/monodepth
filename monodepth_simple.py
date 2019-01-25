@@ -87,12 +87,11 @@ def test_simple(params):
     plt.imsave(os.path.join(output_directory, "{}_disp.png".format(output_name)), disp_to_img, cmap='plasma')
 
     baseline = 0.22
-    focal = 2262
-    depth = baseline * focal / (original_width * disp_pp + 1e-5)
+    focal = 2262.0
+    depth = baseline * focal / (float(original_width) * disp_pp + 1e-5)
     
-    #np.save(os.path.join(output_directory, "{}_depth.npy".format(output_name)), depth)
-    depth_to_img = scipy.misc.imresize(depth.squeeze(), [original_height, original_width])
-    plt.imsave(os.path.join(output_directory, "{}_depth.png".format(output_name)), depth_to_img, cmap='plasma', vmax = 60)  
+    depth_to_img = scipy.misc.imresize(depth.squeeze(), [original_height, original_width], mode = 'F')
+    plt.imsave(os.path.join(output_directory, "{}_depth.png".format(output_name)), depth_to_img, cmap='plasma', vmax = 80)  
     
     fileOut = open("{}_depth.txt".format(output_name), "w")
 
