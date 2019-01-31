@@ -79,7 +79,7 @@ def test_simple(params):
     disp = sess.run(model.disp_left_est[0], feed_dict={left: input_images})
     disp_pp = post_process_disparity(disp.squeeze()).astype(np.float32)
 
-    output_directory = sys.path[0]
+    output_directory = sys.path[0] + "/output/"
     output_name = os.path.splitext(os.path.basename(args.image_path))[0]
 
     #np.save(os.path.join(output_directory, "{}_disp.npy".format(output_name)), disp_pp)
@@ -93,7 +93,7 @@ def test_simple(params):
     depth_to_img = scipy.misc.imresize(depth.squeeze(), [original_height, original_width], mode = 'F')
     plt.imsave(os.path.join(output_directory, "{}_depth.png".format(output_name)), depth_to_img, cmap='plasma', vmax = 80)  
     
-    fileOut = open("{}_depth.txt".format(output_name), "w")
+    fileOut = open("output/{}_depth.txt".format(output_name), "w")
 
     for x in range(0, depth_to_img.shape[0]):
         for y in range(0, depth_to_img.shape[1]):
